@@ -7,9 +7,11 @@ from scipy.stats import zscore
 
 # SETTINGS
 BIN_SIZE = 0.1  # seconds
-TRAFFIC_TYPES = ['tor_regular_traffic', 'tor_burst_traffic', 'tor_parallel_traffic', 'tor_random_traffic']
+TRAFFIC_TYPES = ['tor_regular', 'tor_burst', 'tor_parallel', 'tor_random']
 NUM_RUNS = 10
 
+
+#get the timestamps out of the pcap files
 def extract_timestamps(pcap_path):
     result = subprocess.run(
         ['tshark', '-r', pcap_path, '-T', 'fields', '-e', 'frame.time_epoch'],
@@ -20,6 +22,7 @@ def extract_timestamps(pcap_path):
     timestamps = [float(ts.strip()) for ts in result.stdout.strip().split('\n') if ts.strip()]
     return np.array(timestamps)
 
+#TODO
 def bin_timestamps(timestamps, bin_size):
     if len(timestamps) == 0:
         return np.array([])
@@ -29,6 +32,8 @@ def bin_timestamps(timestamps, bin_size):
     binned_counts, _ = np.histogram(timestamps, bins=bins)
     return binned_counts
 
+
+#Takes two pcap files (one client-server pair) and computes the z-score for correlation 
 def analyze_pair(client_pcap, server_pcap):
     client_ts = extract_timestamps(client_pcap)
     server_ts = extract_timestamps(server_pcap)
@@ -51,18 +56,22 @@ def analyze_pair(client_pcap, server_pcap):
 
     return max_corr, lag
 
+
+#handles each client - server pair in one folder (traffic type)
 def process_traffic_type(folder):
     print(f"\nAnalyzing {folder}")
     results = []
 
+    #get files
     for i in range(1, NUM_RUNS + 1):
-        client_pcap = os.path.join(folder, f"{folder[:-8]}{i}_client.pcap")
-        server_pcap = os.path.join(folder, f"{folder[:-8]}{i}_server.pcap")
+        client_pcap = os.path.join(folder, f"{folder}{i}_client.pcap")
+        server_pcap = os.path.join(folder, f"{folder}{i}_server.pcap")
 
         if not os.path.exists(client_pcap) or not os.path.exists(server_pcap):
             print(f"Missing files for run {i}")
             continue
 
+        #analyze for existing correlation 
         max_corr, lag = analyze_pair(client_pcap, server_pcap)
         results.append({
             "run": i,
@@ -70,13 +79,21 @@ def process_traffic_type(folder):
             "lag": lag
         })
 
+    #check if the results folder exists
+    os.makedirs("results", exist_ok=True)
+
+    # Create the DataFrame for the results and save in a csv file
     df = pd.DataFrame(results)
-    df.to_csv(f"{folder}_correlation_results.csv", index=False)
-    print(f"Saved results to {folder}_correlation_results.csv")
+    df.to_csv(f"results/{folder}_correlation_results.csv", index=False)
+    print(f"Saved results to results/{folder}_correlation_results.csv")
+
+
 
 def main():
+    #iterate over the four different traffic types 
     for traffic_type in TRAFFIC_TYPES:
         process_traffic_type(traffic_type)
+
 
 if __name__ == "__main__":
     main()

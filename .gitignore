@@ -4,3 +4,8 @@ __pycache__/
 .env
 results/*.csv
 *.DS_Store
+venv
+tor_burst
+tor_parallel
+tor_random
+tor_regular
