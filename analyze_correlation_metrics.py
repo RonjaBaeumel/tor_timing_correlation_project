@@ -5,6 +5,10 @@ import numpy as np
 from scipy.signal import correlate
 from scipy.stats import zscore
 
+
+# This script requires tshark (Wireshark CLI tool) to be installed and accessible in your system PATH
+
+
 # SETTINGS
 BIN_SIZE = 0.1  # seconds
 TRAFFIC_TYPES = ['tor_regular', 'tor_burst', 'tor_parallel', 'tor_random']
