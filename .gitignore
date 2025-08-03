@@ -1,11 +1,25 @@
-*.pcap
-*.pyc
+# Python artifacts
 __pycache__/
-.env
-results/*.csv
-*.DS_Store
-venv
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+.venv/
+
+# OS files
+.DS_Store
+Thumbs.db
+
+#Data
 tor_burst
 tor_parallel
 tor_random
 tor_regular
+
+# Results & generated files
+results/
+*.png
+*.csv
