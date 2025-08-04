@@ -20,6 +20,4 @@ tor_random
 tor_regular
 
 # Results & generated files
-results/
-*.png
 *.csv
