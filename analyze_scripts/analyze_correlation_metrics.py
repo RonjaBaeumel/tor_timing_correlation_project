@@ -66,10 +66,14 @@ def process_traffic_type(folder):
     print(f"\nAnalyzing {folder}")
     results = []
 
+    project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
+    target_folder = os.path.join(project_root, folder)
+
     #get files
     for i in range(1, NUM_RUNS + 1):
-        client_pcap = os.path.join(folder, f"{folder}{i}_client.pcap")
-        server_pcap = os.path.join(folder, f"{folder}{i}_server.pcap")
+        # Build the pcap path in the parent directory
+        client_pcap = os.path.join(target_folder, f"{folder}{i}_client.pcap")
+        server_pcap = os.path.join(target_folder, f"{folder}{i}_server.pcap")
 
         if not os.path.exists(client_pcap) or not os.path.exists(server_pcap):
             print(f"Missing files for run {i}")
@@ -84,12 +88,13 @@ def process_traffic_type(folder):
         })
 
     #check if the results folder exists
-    os.makedirs("results", exist_ok=True)
+    results_path= os.path.join(project_root, "results")
+    os.makedirs(results_path, exist_ok=True)
 
     # Create the DataFrame for the results and save in a csv file
     df = pd.DataFrame(results)
-    df.to_csv(f"results/{folder}_correlation_results.csv", index=False)
-    print(f"Saved results to results/{folder}_correlation_results.csv")
+    df.to_csv(f"{results_path}/{folder}_correlation_results.csv", index=False)
+    print(f"Saved results to {results_path}/{folder}_correlation_results.csv")
 
 
 
