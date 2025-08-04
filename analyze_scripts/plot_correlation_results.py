@@ -30,7 +30,6 @@ def plot_max_correlation(data):
     plt.ylabel("Max Correlation Score")
     plt.xlabel("Traffic Type")
     plt.grid(True, linestyle='--', alpha=0.5)
-    #plt.ylim(top = 300)
     plt.tight_layout()
     plt.savefig(os.path.join(project_root, "results","correlation_plot.png"), dpi=300)
     plt.show()
