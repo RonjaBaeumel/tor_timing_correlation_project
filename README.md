@@ -1,12 +1,63 @@
 # Timing Correlation Attacks on Tor Traffic
 This project explores timing-based correlation attacks on a local Tor network using simulated traffic. The goal is to evaluate how timing patterns can be used to deanonymize users under different traffic behaviors.
 
-## What It Does
-- Spins up a local Tor network with [Chutney](https://gitweb.torproject.org/chutney.git/)
-- Simulates client-server communication using various traffic types (regular, burst, parallel, random)
-- Captures `.pcap` files at client and server
-- Analyzes and compares traffic via normalized cross-correlation
-- Visualizes attack effectiveness across traffic types
+
+## About the Project
+This repository was created as a final project for an university course to explore low-level traffic correlation vulnerabilities in Tor. It demonstrates how even without content, timing alone can reveal linkability between clients and servers. This includes: 
+- Setting up a local Tor network with [Chutney](https://gitweb.torproject.org/chutney.git/) including two clients, several nodes and a hidden tor service running on a server
+- Simulating client-server communication using various traffic types (regular, burst, parallel, random)
+- Capturing these conversations as `.pcap` files at client and server
+- Analyzing and comparing traffic via normalized cross-correlation
+- Visualizing attack effectiveness across traffic types
+- Interpreting results and drawing a conclusion
+
+
+## Usage
+### 1. Get the Data
+To generate the `.pcap` files used in this analysis:
+1. **Set up a local Tor network** using [Chutney](https://gitweb.torproject.org/chutney.git/)
+2. **Run the included traffic generation scripts** for different traffic patterns
+3. **Capture traffic** on the client and server interfaces
+4. Store the resulting `.pcap` files under folders like `tor_regular/`, `tor_burst/`, etc.
+or:
+1. **Download provided examples**
+
+> For full setup details and instructions, see [`TRAFFIC_GEN.md`](TRAFFIC_GEN.md)
+
+### 2. Analyze traffic correlation
+```bash
+python3 scripts/analyze_correlation_metrics.py
+```
+This script:
+- Loads .pcap files from specified folders ( in client/server pairs)
+- Extracts timestamps using tshark
+- Computes normalized cross-correlation and max lag
+- Saves results to results/<traffic_type>_correlation_results.csv
+
+### 3. Plot results
+```bash
+python scripts/plot_correlation_results.py
+```
+This script:
+- Loads all previously generated .csv results
+- Plots correlation scores by traffic type
+
+## Example output:
+[here](ANALYSIS.md)
+
+
+## Project Structure
+```bash
+tor-timing-correlation/
+├── data/                       # Sample .pcap files #TODO
+├── results/                    # Output plots and correlation scores #TODO
+├── results_scripts/            # Python scripts for traffic analysis & plotting
+├── traffic_scripts/            # Python scripts to create the traffic and instruction
+├── notebooks/                  # Jupyter demos #TODO
+├── requirements.txt            # Python dependencies
+├── README.md                   # You're here
+└── ANALYSIS.md                 # Results and interpretation
+```
 
 ## Requirements
 ### Python Packages
@@ -30,189 +81,12 @@ sudo dpkg-reconfigure wireshark-common
 sudo usermod -aG wireshark $USER
 ```
 Then restart your session to capture without sudo.
+TODO: captures with tcpdump -> then add tcpdump (or captures with tshark possible?)
 
-## Project Structure
-```bash
-tor-timing-correlation/
-├── data/                       # Sample .pcap files #TODO
-├── results/                    # Output plots and correlation scores #TODO
-├── results_scripts/            # Python scripts for traffic analysis & plotting
-├── traffic_scripts/            # Python scripts to create the traffic
-├── notebooks/                  # Jupyter demos #TODO
-├── requirements.txt            # Python dependencies
-└── README.md                   # You're here
-```
-
-## Usage
-### 1. Analyze traffic correlation
-```bash
-python3 scripts/analyze_correlation_metrics.py
-```
-This script:
-- Loads .pcap files from specified folders (client/server pairs)
-- Extracts timestamps using tshark
-- Computes normalized cross-correlation and max lag
-- Saves results to results/<traffic_type>_correlation_results.csv
-
-### 2. Plot results
-```bash
-python scripts/plot_correlation_results.py
-```
-This script:
-- Loads all .csv previously generated results
-- Plots correlation scores by traffic type
-
-## Example output:
-TODO put in picture
-
-## Sample Traffic Types
-The generated data has the following patterns: 
-### tor_regular/
-Regular Interval Traffic:
-- Pattern: 1 request every second
-- Duration: 20 requests total
-- Purpose: Establish a baseline with steady, predictable traffic
-
-### tor_burst/
-Burst Traffic:
-- Pattern: 5 quick requests (0.2s apart), followed by a 3-second pause- 
-- Repetition: 4 bursts (20 requests total)- 
-- Purpose: Simulate bursts like rapid page refreshes or data pulls
-
-### tor_parallel/
-Parallel Client Noise Traffic
-- Setup: Two clients send traffic simultaneously
-- Client 1: Sends regular interval traffic (used for measurement)
-- Client 2: Sends random traffic to simulate background noise
-- Purpose: Add realism by emulating concurrent activity in the Tor network
-
-### tor_random/
-Randomized Interval Traffic:
-- Pattern: Random delay between 0.1–3 seconds between each request- 
-- Total Requests: 20- 
-- Purpose: Mimic realistic, unpredictable human browsing behavior
-
-Each folder contains:
-- 10 client-side .pcap captures
-- 10 server-side .pcap captures
-
-File names example: tor_regular10_client.pcap, tor_regular10_server.pcap
-
-## About the Project
-This repository was created as part of a research-orientented university project to explore low-level traffic correlation vulnerabilities in Tor. It demonstrates how even without content, timing alone can reveal linkability between clients and servers.
 
 ## Disclaimer
-This project is for educational and ethical research only. All experiments were conducted in a fully contained virtual environment and do not interact with the live Tor network.
+This project is for educational and ethical research only. All experiments were conducted in a fully contained virtual environment and did not interact with the live Tor network.
+
 
 ## License
 MIT License — see LICENSE for details.
-
-
-<!--Tor Traffic Experiment Workflow
-✅ 1. Initial Setup (One-Time Preparation)
-
-    ✅ Ensure the following tools are installed:
-
-Tor
-
-Chutney (for creating the local Tor network)
-
-tcpdump (for capturing network traffic)
-
-Python 3
-
-        curl (for initial connectivity testing)
-
-    ✅ Clone/setup the Chutney test network with:
-
-        2 client nodes
-
-        1 hidden service (server)
-
-        3 relays
-
-    ✅ Configure:
-
-        Hidden service to host a simple web server with a .onion address.
-
-        Clients to access it only via SOCKS5 proxies (on ports 9055 and 9056).
-
-🚀 2. Test the Tor Network
-
-    Run Chutney to start the Tor test network.
-
-    Test connectivity manually:
-
-    curl --socks5-hostname 127.0.0.1:9055 http://your-hidden-service.onion
-
-    ✅ If the server responds, the Tor network is working.
-
-📦 3. Prepare for Data Collection
-
-    Open three terminal windows:
-    Terminal 1 (Client Side Capture)
-
-sudo tcpdump -i lo port 9055 -w client_capture.pcap
-
-Terminal 2 (Server Side Capture)
-
-    sudo tcpdump -i lo port [server_port] -w server_capture.pcap
-
-    (Use appropriate port or interface where server listens)
-    Terminal 3 (Server Monitoring)
-
-        Run a lightweight HTTP server to print incoming GET requests.
-
-🧪 4. Run the Experiment
-
-    In a new terminal, run one of the traffic generation scripts:
-
-python3 generateTorTrafficRandom.py
-
-Or, depending on scenario:
-
-    python3 generateTorTrafficBurst.py
-    python3 generateTorTrafficRegular.py
-
-    If simulating parallel clients, start both scripts:
-
-        One using port 9055 (target, measured)
-
-        One using port 9056 (noise)
-
-🧹 5. After the Test
-
-    Stop tcpdump in both Terminal 1 and 2.
-
-    Save the .pcap files (label them clearly: client/server + traffic type).
-
-    Stop the Tor network (chutney stop or custom script).
-
-    Restart Chutney to reset the network:
-
-    chutney stop
-    chutney configure
-    chutney start
-
-🔁 6. Repeat for Each Scenario
-
-Repeat steps 3–5 for each of the 4 traffic modes:
-
-    Regular
-
-    Burst
-
-    Randomized
-
-    Parallel Clients (Regular + Random)
-
-Repeat each scenario 10 times → results in 40 total captures.
-📊 7. Post-Experiment
-
-    Analyze .pcap files using:
-
-        Wireshark or
-
-        Python tools (e.g., scapy, pyshark) to inspect timing, packet sizes, etc.
-
-    Goal: assess if traffic patterns can be linked across client and server → possible deanonymization.-->
