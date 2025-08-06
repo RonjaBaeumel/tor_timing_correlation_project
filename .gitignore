@@ -19,5 +19,3 @@ tor_parallel
 tor_random
 tor_regular
 
-# Results & generated files
-*.csv

@@ -4,7 +4,7 @@ This project explores timing-based correlation attacks on a local Tor network us
 
 ## About the Project
 This repository was created as a final project for an university course to explore low-level traffic correlation vulnerabilities in Tor. It demonstrates how even without content, timing alone can reveal linkability between clients and servers. This includes: 
-- Setting up a local Tor network with [Chutney](https://gitweb.torproject.org/chutney.git/) including two clients, several nodes and a hidden tor service running on a server
+- Setting up a local Tor network with [Chutney](https://gitweb.torproject.org/chutney.git/) including two clients, several relays and a hidden tor service running on a server
 - Simulating client-server communication using various traffic types (regular, burst, parallel, random)
 - Capturing these conversations as `.pcap` files at client and server
 - Analyzing and comparing traffic via normalized cross-correlation
@@ -43,17 +43,16 @@ This script:
 - Plots correlation scores by traffic type
 
 ## Example output:
-[here](ANALYSIS.md)
+[Analysis](ANALYSIS.md)
 
 
 ## Project Structure
 ```bash
 tor-timing-correlation/
 ├── data/                       # Sample .pcap files #TODO
-├── results/                    # Output plots and correlation scores #TODO
-├── results_scripts/            # Python scripts for traffic analysis & plotting
-├── traffic_scripts/            # Python scripts to create the traffic and instruction
-├── notebooks/                  # Jupyter demos #TODO
+├── results/                    # Output plots and correlation scores
+├── analyze_scripts/            # Python scripts for traffic analysis & plotting
+├── traffic_scripts/            # Python scripts to create the traffic and instructions
 ├── requirements.txt            # Python dependencies
 ├── README.md                   # You're here
 └── ANALYSIS.md                 # Results and interpretation
