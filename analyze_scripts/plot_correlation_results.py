@@ -5,6 +5,7 @@ import os
 
 TRAFFIC_TYPES = ['tor_regular', 'tor_burst', 'tor_parallel', 'tor_random']
 
+#Loads the data from the previoulsy generated .csv files 
 def load_data():
     all_data = []
 
@@ -20,7 +21,7 @@ def load_data():
     return pd.concat(all_data, ignore_index=True)
 
 
-#Create an save correlation plot in the results folder
+#Create and save correlation plot in the results folder
 def plot_max_correlation(data):
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
     plt.figure(figsize=(10, 6))

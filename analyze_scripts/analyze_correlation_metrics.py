@@ -12,7 +12,7 @@ from scipy.stats import zscore
 # SETTINGS
 BIN_SIZE = 0.1  # seconds
 TRAFFIC_TYPES = ['tor_regular', 'tor_burst', 'tor_parallel', 'tor_random']
-NUM_RUNS = 10
+NUM_RUNS = 2 # Adjust to the number of .pcaps you have
 
 
 #get the timestamps out of the pcap files
@@ -26,7 +26,7 @@ def extract_timestamps(pcap_path):
     timestamps = [float(ts.strip()) for ts in result.stdout.strip().split('\n') if ts.strip()]
     return np.array(timestamps)
 
-#TODO
+#group timestamps to bins
 def bin_timestamps(timestamps, bin_size):
     if len(timestamps) == 0:
         return np.array([])
@@ -67,7 +67,7 @@ def process_traffic_type(folder):
     results = []
 
     project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..'))
-    target_folder = os.path.join(project_root, folder)
+    target_folder = os.path.join(project_root,'data' )#folder
 
     #get files
     for i in range(1, NUM_RUNS + 1):
