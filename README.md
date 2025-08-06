@@ -3,7 +3,7 @@ This project explores timing-based correlation attacks on a local Tor network us
 
 
 ## About the Project
-This repository was created as a final project for an university course to explore low-level traffic correlation vulnerabilities in Tor. It demonstrates how even without content, timing alone can reveal linkability between clients and servers. This includes: 
+This repository was created as a final project for an university course to explore low-level traffic correlation vulnerabilities in Tor. It demonstrates how even without content, timing alone can reveal links between clients and servers. This includes: 
 - Setting up a local Tor network with [Chutney](https://gitweb.torproject.org/chutney.git/) including two clients, several relays and a hidden tor service running on a server
 - Simulating client-server communication using various traffic types (regular, burst, parallel, random)
 - Capturing these conversations as `.pcap` files at client and server
@@ -18,28 +18,30 @@ To generate the `.pcap` files used in this analysis:
 1. **Set up a local Tor network** using [Chutney](https://gitweb.torproject.org/chutney.git/)
 2. **Run the included traffic generation scripts** for different traffic patterns
 3. **Capture traffic** on the client and server interfaces
-4. Store the resulting `.pcap` files under folders like `tor_regular/`, `tor_burst/`, etc.
+4. Store the resulting `.pcap` files under folders like `tor_regular/`, `tor_burst/`, etc. <br>
 or:
-1. **Download provided examples**
+1. **Download provided sampless**
 
-> For full setup details and instructions, see [`TRAFFIC_GEN.md`](TRAFFIC_GEN.md)
+> For full setup details and instructions, see [`TRAFFIC_GEN.md`](traffic_scripts/TRAFFIC_GEN.md)
 
 ### 2. Analyze traffic correlation
+run:
 ```bash
-python3 scripts/analyze_correlation_metrics.py
+python3 analyze_scripts/analyze_correlation_metrics.py
 ```
 This script:
-- Loads .pcap files from specified folders ( in client/server pairs)
+- Loads `.pcap` files from specified folders ( in client/server pairs)
 - Extracts timestamps using tshark
 - Computes normalized cross-correlation and max lag
-- Saves results to results/<traffic_type>_correlation_results.csv
+- Saves results to results/<traffic_type>_correlation_results.csv   
 
 ### 3. Plot results
+run: 
 ```bash
-python scripts/plot_correlation_results.py
+python analyze_scripts/plot_correlation_results.py
 ```
 This script:
-- Loads all previously generated .csv results
+- Loads all previously generated `.csv` results
 - Plots correlation scores by traffic type
 
 ## Example output:
@@ -49,7 +51,7 @@ This script:
 ## Project Structure
 ```bash
 tor-timing-correlation/
-├── data/                       # Sample .pcap files #TODO
+├── data/                       # Sample .pcap files 
 ├── results/                    # Output plots and correlation scores
 ├── analyze_scripts/            # Python scripts for traffic analysis & plotting
 ├── traffic_scripts/            # Python scripts to create the traffic and instructions
@@ -65,7 +67,7 @@ Install with:
 pip install -r requirements.txt
 ```
 ### System Dependencies
-You must have tshark installed (the command-line version of Wireshark), as it's used to extract packet timestamps from .pcap files.<br>
+You must have tshark installed (the command-line version of Wireshark), as it's used to extract packet timestamps from `.pcap` files.<br>
 - On Linux:
 ```bash
 sudo apt install tshark
@@ -80,7 +82,8 @@ sudo dpkg-reconfigure wireshark-common
 sudo usermod -aG wireshark $USER
 ```
 Then restart your session to capture without sudo.
-TODO: captures with tcpdump -> then add tcpdump (or captures with tshark possible?)
+
+> If you want to generate your own data tcpdump is needed to capture the traffic
 
 
 ## Disclaimer
@@ -88,4 +91,4 @@ This project is for educational and ethical research only. All experiments were 
 
 
 ## License
-MIT License — see LICENSE for details.
+MIT License — see [LICENSE](LICNCE.md) for details.

@@ -1,7 +1,6 @@
 # Traffic Generation Guide
 This guide explains how to set up a local Tor network with Chutney and use the included traffic generation scripts to create the `.pcap` datasets.
 
----
 
 ## 1. Prerequisites
 - Python 3
@@ -16,7 +15,7 @@ cd chutney
 make
 ```
 ## 2.Start the Tor network
-Setup the Chutney test network with:
+Setup the Chutney test network (or use a provided example) with:
 - 2 client nodes
 - 1 hidden service (server)
 - 3 relays
@@ -28,8 +27,8 @@ Start the examples/basic network:
 ```
 
 Configure:
-- Clients to only use SocksPort to access the network (on ports 9055 and 9056 for example).
-    For this open the torrc file in each client 
+- Clients to only use SocksPort to access the network (on ports 9055 and 9056 for example).<br>
+    For this open the torrc file in each client:
     ```bash
     nano chutney/net/nodes/000a/torrc
     ```
@@ -37,10 +36,10 @@ Configure:
     ```bash
     TOR_SOCKS_PORT=9055 torsocks curl http://www.google.com
     ```
-- Hidden service to host a simple web server with a .onion address
+- Hidden service to host a simple web server with a .onion address.<br>
     For this use node 008c to configure your service on and open the torrc file again. Then add these two lines:
     ```bash
-    HiddenServiceDir <complete_path_to_your>/chutney/net/nodes/008c/hs  #
+    HiddenServiceDir <complete_path_to_your>/chutney/net/nodes/008c/hs  #insert your path
     HiddenServicePort 80 127.0.0.1:8080 
     ```
     
@@ -55,18 +54,21 @@ curl --socks5-hostname 127.0.0.1:9055 http://<your-hidden-service.onion>
 
 ## 4. Prepare for Data Collection
 - Open three terminal windows:
-> Terminal 1 (Client Side Capture)
+**Terminal 1** 
+- Client Side Capture
 ```bash
 sudo tcpdump -i lo port 9055 -w client_capture.pcap
 ```
 
-> Terminal 2 (Server Side Capture)
+**Terminal 2** 
+- Server Side Capture
 ```bash
     sudo tcpdump -i lo port 8080 -w server_capture.pcap
 ```
-    (Use right port or interface where server listens)
+- Use right port or interface where server listens
 
-> Terminal 3 (Server Monitoring)
+**Terminal 3** 
+- Monitor Server for incomming GET requests.
 - navigate to the .../chutney directory
 - restart the network 
 - navigate to the server node and start the  server
@@ -75,7 +77,6 @@ sudo tcpdump -i lo port 9055 -w client_capture.pcap
 cd net/nodes/008c
 python3 -m http.server 8080
 ```  
-- here you can monitor incomming GET requests.
 
 
 ## 5.Run the Experiment
@@ -105,9 +106,9 @@ Or, depending on scenario:
     - Randomized
     - Parallel Clients (Regular + Random)
 
->Repeat each scenario 10 or more times for statistic relevance
-
-- The following patterns are implemented here:
+    >Repeat each scenario 10 or more times for statistic relevance
+<br>
+The following patterns are implemented here:
 ### Regular Interval Traffic:
 - Pattern: 1 request every second
 - Duration: 20 requests total
@@ -137,7 +138,7 @@ File names example: tor_regular10_client.pcap, tor_regular10_server.pcap
 
 # 8. Post-Experiment
 - Analyze .pcap files to assess if traffic patterns can be linked across client and server → possible deanonymization.
-- see [ANALYSIS.md]
+- see [ANALYSIS.md](../ANALYSIS.md)
 
 
 
